@@ -133,11 +133,16 @@ def main(args=sys.argv):
   pdf.set_text_color(title_text_color)
   pdf.text(year_x, year_y, text=f'{year}')
 
-  subtitle_x, subtitle_alignment = random.choice([
-    (0.75, 'L'),
-    (9.25, 'R'),
-  ])
-  subtitle_y = random.uniform(0.9, 6.0)
+  while True:
+    subtitle_x, subtitle_alignment = random.choice([
+      (0.75, 'L'),
+      (9.25, 'R'),
+    ])
+    subtitle_y = random.uniform(0.9, 6.0)
+    # If they are within 1.0 of the year_x/y, continue
+    dist_to_year = abs(year_x-subtitle_x) + abs(year_y-subtitle_y)
+    if dist_to_year > 4.0:
+      break
 
   pdf.set_font('helvetica', size=24)
 
