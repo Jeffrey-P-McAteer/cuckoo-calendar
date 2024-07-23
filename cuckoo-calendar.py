@@ -380,7 +380,7 @@ def main(args=sys.argv):
     pdf.cell(text=f'OUT_FILE = {out_file}')
     pdf.ln()
     pdf.ln()
-    pdf.cell(text=f'= = = = CUCKOOS = = = =')
+    pdf.cell(text=f'= = = = CUCKOOS ({len(cuckoos_performed)}) = = = =')
     pdf.ln()
     for c in cuckoos_performed:
       pdf.cell(text=f'{c}')
