@@ -104,8 +104,8 @@ def readall_month_images(flip_month_imgs=False):
         flipped_img = os.path.abspath(os.path.join('months', f'{month_i}.flip.png'))
         if not os.path.exists(flipped_img):
           img = PIL.Image.open(month_img_f)
-          im_flip = PIL.ImageOps.flip(img)
-          im_flip.save(flipped_img)
+          im_rotated = img.rotate(180)
+          im_rotated.save(flipped_img)
 
         month_imgs[month_i] = flipped_img
 
