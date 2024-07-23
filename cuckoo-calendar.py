@@ -244,10 +244,15 @@ def main(args=sys.argv):
     pdf.add_page()
     pdf.set_font('helvetica', size=14)
     pdf.set_text_color((6, 6, 6))
-    pdf.cell(text=f'S/M/Tu/W/Th/F/Sat, avg color = {get_avg_color(month_imgs[month_i])}\npallet = {get_pallet(month_imgs[month_i])}')
-    pdf.ln()
-    pdf.cell(text=f'color_similarity(p, image_page_color) = [{[color_similarity(p, image_page_color) for p in image_page_pallet]}]')
-    pdf.ln()
+
+    # Create a 7x4 grid
+    with pdf.table() as table:
+      for row_i in range(0, 4):
+        row = table.row()
+        for day_of_week_i in range(0, 7):
+          row.cell('Some text')
+
+
 
   # Finally, put this config on final page
   pdf.set_page_background(None)
