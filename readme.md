@@ -12,4 +12,10 @@ If no image under `months/<N>.png` exists, one will randomly be downloaded from 
  - https://github.com/fengsp/color-thief-py
 
 
+# Cleanup
+
+```bash
+rm -rf cache months out
+```
+
 
