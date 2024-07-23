@@ -310,7 +310,7 @@ def main(args=sys.argv):
         day_of_week_row = table.row()
 
         for day_of_week in ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
-          day_of_week_row.cell(f'{day_of_week}')
+          day_of_week_row.cell(f'{day_of_week}', align='C')
 
         skip_a_day_leave_a_blank = False
         overlap_a_day = False
