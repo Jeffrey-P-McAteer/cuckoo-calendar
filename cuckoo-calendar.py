@@ -210,7 +210,8 @@ def main(args=sys.argv):
 
   # End Title Front
 
-  single_day_padding=(2, 16, 16, 2) # top, right, bottom, and left
+  single_day_padding=(0.02, 0.08, 0.6, 0.02) # top, right, bottom, and left in... inches?
+  
   # We begin January 1, and keep track of that plus any deltas we want to apply.
   # Early on it is important that the days follow eachother, but we have additional dimensions to mess
   # with as the year goes on!
