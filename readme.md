@@ -13,7 +13,8 @@ If no image under `months/<N>.png` exists, one will randomly be downloaded from 
 SEED=<optional integer for repeatability>
 YEAR=2032
 TITLE_SUBTITLE='Text on cover page smaller than year'
-OUT_FILE./path/to/output.pdf # default is out/cuckoo-<year>.pdf
+CUCKOO_BEGIN='in 2 months' # Relative to Jan 1 of <YEAR>, parsed by dateparser python lib
+OUT_FILE./path/to/output.pdf # default is out/cuckoo-<YEAR>.pdf
 
 # Edit/manually place images under months/<N>.png if you want
 # to override a month's image. 0.png is the cover image.

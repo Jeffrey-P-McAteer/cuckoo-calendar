@@ -74,6 +74,14 @@ except:
   traceback.print_exc()
 
 
+try:
+  import dateparser
+except:
+  subprocess.run([
+    sys.executable, '-m', 'pip', 'install', f'--target={site_packages}', 'dateparser'
+  ])
+  import dateparser 
+
 cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
 os.makedirs(cache_dir, exist_ok=True)
 cache_me = joblib.Memory(cache_dir, verbose=0)
@@ -211,11 +219,24 @@ def main(args=sys.argv):
   # End Title Front
 
   single_day_padding=(0.02, 0.08, 0.6, 0.02) # top, right, bottom, and left in... inches?
-  
+
   # We begin January 1, and keep track of that plus any deltas we want to apply.
   # Early on it is important that the days follow eachother, but we have additional dimensions to mess
   # with as the year goes on!
   today = datetime.datetime(year, 1, 1, 0, 0, 0)
+  today_render_delta = datetime.timedelta(days=0)
+
+  cuckoo_begin_date = dateparser.parse(
+    os.environ.get('CUCKOO_BEGIN', 'in 1 month'),
+    settings={
+      'RELATIVE_BASE': today,
+      'PREFER_DATES_FROM': 'future',
+    }
+  )
+  print(f'CUCKOO_BEGIN = {cuckoo_begin_date}')
+  cuckoos_performed = []
+
+  num_skipped_days_at_month_break = 0
 
   for month_i in range(1, 13):
     month_name = calendar.month_name[month_i] # 0 == '', 1 == January.
@@ -262,24 +283,52 @@ def main(args=sys.argv):
       for day_of_week in ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
         day_of_week_row.cell(f'{day_of_week}')
 
+      skip_a_day = False
+      if today >= cuckoo_begin_date:
+        if random.choice([True] + (1*[False])):
+          num_skipped_days_at_month_break += 1
+          skip_a_day = True
+          cuckoos_performed.append(f'Skipping a day at {today}')
+
+      # We render here so we can remove empty weeks / fix up any chaos
+      month_day_nums_grid = []
+
       for row_i in range(0, 6):
-        row = table.row()
+        week_of_day_nums = []
         for day_of_week_i in range(0, 7):
-          if today.month == month_i and weekday_to_dow_idx(today.weekday()) == day_of_week_i:
-            row.cell(f'{today.day}', padding=single_day_padding)
-            today = today + datetime.timedelta(days=1)
+          if (today+today_render_delta).month == month_i and weekday_to_dow_idx((today).weekday()) == day_of_week_i:
+            if skip_a_day:
+              skip_a_day = False
+              today_render_delta -= datetime.timedelta(days=1)
+              week_of_day_nums.append('')
+            else:
+              week_of_day_nums.append(f'{(today+today_render_delta).day}')
+            today = today + datetime.timedelta(days=1) # always advance time 1 day
           else:
-            row.cell('', padding=single_day_padding)
-        if today.month != month_i:
+            week_of_day_nums.append('')
+
+        month_day_nums_grid.append(week_of_day_nums)
+
+        if (today+today_render_delta).month != month_i:
           break
+      
 
+      if all(len(t) < 1 for t in month_day_nums_grid[0]):
+        month_day_nums_grid = month_day_nums_grid[1:] # remove first week if all text is empty
 
+      # Do the pdf table render
+      for week_of_day_nums in month_day_nums_grid:
+        row = table.row()
+        for day_text in week_of_day_nums:
+          row.cell(f'{day_text}', padding=single_day_padding)
 
+  for c in cuckoos_performed:
+    print(c)
 
   # Finally, put this config on final page
   pdf.set_page_background(None)
   pdf.add_page()
-  pdf.set_font('helvetica', size=14)
+  pdf.set_font('helvetica', size=12)
   pdf.set_text_color((6, 6, 6))
   pdf.cell(text=f'= = = = CONFIG = = = =')
   pdf.ln()
@@ -289,8 +338,16 @@ def main(args=sys.argv):
   pdf.ln()
   pdf.cell(text=f'TITLE_SUBTITLE = {title_subtitle}')
   pdf.ln()
+  pdf.cell(text=f'CUCKOO_BEGIN = {cuckoo_begin_date}')
+  pdf.ln()
   pdf.cell(text=f'OUT_FILE = {out_file}')
   pdf.ln()
+  pdf.ln()
+  pdf.cell(text=f'= = = = CUCKOOS = = = =')
+  pdf.ln()
+  for c in cuckoos_performed:
+    pdf.cell(text=f'{c}')
+    pdf.ln()
 
   pdf.output(out_file)
 
