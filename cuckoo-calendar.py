@@ -116,7 +116,8 @@ def main(args=sys.argv):
   pdf.add_page()
   title_page_color = get_avg_color(month_imgs[0])
   title_page_pallet = get_avg_color(month_imgs[0])
-  title_text_color = invert_color(title_page_color)
+  #title_text_color = invert_color(title_page_color)
+  title_text_color = invert_color(random.choice(get_pallet(month_imgs[0], color_count=4)))
 
   year_x = random.uniform(0.9, 8.0)
   year_y = random.uniform(0.9, 6.0)
