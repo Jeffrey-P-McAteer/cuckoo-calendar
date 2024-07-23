@@ -167,7 +167,9 @@ def main(args=sys.argv):
 
   for out_file, flip_month_imgs in out_file_and_flip_states:
 
-    random.seed(seed)
+    #random.seed(seed)
+    rand = random.Random()
+    rand.seed(seed)
 
     month_imgs = readall_month_images(flip_month_imgs=flip_month_imgs)
     # print(f'month_imgs = {month_imgs}')
@@ -187,14 +189,14 @@ def main(args=sys.argv):
     title_page_color = get_avg_color(month_imgs[0])
     title_page_pallet = get_pallet(month_imgs[0], color_count=4)
     #title_text_color = invert_color(title_page_color)
-    title_text_color = invert_color(random.choice(title_page_pallet))
+    title_text_color = invert_color(rand.choice(title_page_pallet))
     title_text_outline_possibilities = [ c for c in title_page_pallet if color_similarity(c, title_text_color) > 20.0 ]
     if len(title_text_outline_possibilities) < 1:
       title_text_outline_possibilities.append( title_page_color )
-    title_text_outline = random.choice(title_text_outline_possibilities)
+    title_text_outline = rand.choice(title_text_outline_possibilities)
 
-    year_x = random.uniform(0.9, 6.6)
-    year_y = random.uniform(1.3, 6.0)
+    year_x = rand.uniform(0.9, 6.6)
+    year_y = rand.uniform(1.3, 6.0)
 
     pdf.set_font('helvetica', size=164)
 
@@ -209,11 +211,11 @@ def main(args=sys.argv):
     pdf.text(year_x, year_y, text=f'{year}')
 
     while True:
-      subtitle_x, subtitle_alignment = random.choice([
+      subtitle_x, subtitle_alignment = rand.choice([
         (0.75, 'L'),
         (9.25, 'R'),
       ])
-      subtitle_y = random.uniform(0.9, 6.0)
+      subtitle_y = rand.uniform(0.9, 6.0)
       # If they are within 1.0 of the year_x/y, continue
       dist_to_year = abs(year_x-subtitle_x) + abs(year_y-subtitle_y)
       if dist_to_year > 7.0:
@@ -277,14 +279,14 @@ def main(args=sys.argv):
         image_page_color = get_avg_color(month_imgs[month_i])
         image_page_pallet = get_pallet(month_imgs[month_i], color_count=3)
         #image_text_color = invert_color(image_page_color)
-        image_text_color = random.choice(image_page_pallet)
+        image_text_color = rand.choice(image_page_pallet)
         title_text_outline_possibilities = [ c for c in image_page_pallet if color_similarity(c, image_text_color) > 20.0 ]
         if len(title_text_outline_possibilities) < 1:
           title_text_outline_possibilities.append( title_page_color )
-        title_text_outline = random.choice(title_text_outline_possibilities)
+        title_text_outline = rand.choice(title_text_outline_possibilities)
 
-        month_x = random.uniform(0.9, 7.0)
-        month_y = random.uniform(0.9, 6.0)
+        month_x = rand.uniform(0.9, 7.0)
+        month_y = rand.uniform(0.9, 6.0)
 
         pdf.set_font('helvetica', size=78)
 
@@ -314,7 +316,7 @@ def main(args=sys.argv):
 
         skip_a_day = False
         if today >= cuckoo_begin_date:
-          if random.choice([True] + (1*[False])):
+          if rand.choice([True] + (1*[False])):
             num_skipped_days_at_month_break += 1
             skip_a_day = True
             cuckoos_performed.append(f'Skipping a day at {today}')
