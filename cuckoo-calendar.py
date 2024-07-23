@@ -179,7 +179,7 @@ def main(args=sys.argv):
     # Margins are in inches b/c we passed unit='in' to constructor
     pdf.set_margins(
       # left, top, right
-      0.75, 1.0, 0.75
+      0.5, 0.25, 0.5
     )
     # pdf.epw & pdf.eph hold our unit dimensions!
 
@@ -302,8 +302,14 @@ def main(args=sys.argv):
       # Begin Front of bottom-most section
       pdf.set_page_background(None)
       pdf.add_page()
+
+      pdf.set_font('helvetica', size=32)
+      pdf.set_text_color((6, 6, 6))
+      pdf.cell(w=pdf.epw, text=f'{month_name}', align=rand.choice(['L', 'R']))
+
       pdf.set_font('helvetica', size=14)
       pdf.set_text_color((6, 6, 6))
+      pdf.ln(h=0.5) # Whitespace between month name + bottom
 
       # Create a 7x4 grid
       with pdf.table() as table:
