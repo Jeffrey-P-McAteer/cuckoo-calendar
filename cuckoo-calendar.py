@@ -264,8 +264,6 @@ def main(args=sys.argv):
     for month_i in range(1, 13):
       month_name = calendar.month_name[month_i] # 0 == '', 1 == January.
 
-      # TODO we need the month page image + text to be flipped along the Y axis!
-
       # BACK of previous page, therefore the top-most page when calendar is hung.
       pdf.set_page_background(month_imgs[month_i])
       pdf.add_page()
@@ -274,7 +272,7 @@ def main(args=sys.argv):
       if flip_month_imgs:
         page_rotation_angle = 180
 
-      with pdf.rotation(angle=page_rotation_angle, x=pdf.epw/2.0, y=pdf.eph/2.0):
+      with pdf.rotation(angle=page_rotation_angle, x=(pdf.epw + pdf.l_margin + pdf.r_margin)/2.0, y=(pdf.eph + pdf.t_margin + pdf.b_margin)/2.0):
 
         image_page_color = get_avg_color(month_imgs[month_i])
         image_page_pallet = get_pallet(month_imgs[month_i], color_count=3)
