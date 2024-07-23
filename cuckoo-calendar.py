@@ -97,6 +97,15 @@ def readall_month_images():
       urllib.request.urlretrieve('https://picsum.photos/1200/900', month_img_f)
 
     month_imgs[month_i] = month_img_f
+    if month_i >= 1:
+      # Flip all month photos!
+      flipped_img = os.path.abspath(os.path.join('months', f'{month_i}.flip.png'))
+      if not os.path.exists(flipped_img):
+        img = PIL.Image.open(month_img_f)
+        im_flip = PIL.ImageOps.flip(img)
+        im_flip.save(flipped_img)
+
+      month_imgs[month_i] = flipped_img
 
   return month_imgs
 
@@ -157,6 +166,7 @@ def main(args=sys.argv):
     # left, top, right
     0.75, 1.0, 0.75
   )
+  # pdf.epw & pdf.eph hold our unit dimensions!
 
   # Title page - Front
   pdf.set_page_background(month_imgs[0])
@@ -246,30 +256,31 @@ def main(args=sys.argv):
     # BACK of previous page, therefore the top-most page when calendar is hung.
     pdf.set_page_background(month_imgs[month_i])
     pdf.add_page()
+    with pdf.rotation(angle=180, x=pdf.epw/2.0, y=pdf.eph/2.0):
 
-    image_page_color = get_avg_color(month_imgs[month_i])
-    image_page_pallet = get_pallet(month_imgs[month_i], color_count=3)
-    #image_text_color = invert_color(image_page_color)
-    image_text_color = random.choice(image_page_pallet)
-    title_text_outline_possibilities = [ c for c in image_page_pallet if color_similarity(c, image_text_color) > 20.0 ]
-    if len(title_text_outline_possibilities) < 1:
-      title_text_outline_possibilities.append( title_page_color )
-    title_text_outline = random.choice(title_text_outline_possibilities)
+      image_page_color = get_avg_color(month_imgs[month_i])
+      image_page_pallet = get_pallet(month_imgs[month_i], color_count=3)
+      #image_text_color = invert_color(image_page_color)
+      image_text_color = random.choice(image_page_pallet)
+      title_text_outline_possibilities = [ c for c in image_page_pallet if color_similarity(c, image_text_color) > 20.0 ]
+      if len(title_text_outline_possibilities) < 1:
+        title_text_outline_possibilities.append( title_page_color )
+      title_text_outline = random.choice(title_text_outline_possibilities)
 
-    month_x = random.uniform(0.9, 7.0)
-    month_y = random.uniform(0.9, 6.0)
+      month_x = random.uniform(0.9, 7.0)
+      month_y = random.uniform(0.9, 6.0)
 
-    pdf.set_font('helvetica', size=78)
+      pdf.set_font('helvetica', size=78)
 
-    outline_offset = 0.009
-    pdf.set_text_color(title_text_outline)
-    pdf.text(month_x-outline_offset, month_y-outline_offset, text=f'{month_name}')
-    pdf.text(month_x-outline_offset, month_y+outline_offset, text=f'{month_name}')
-    pdf.text(month_x+outline_offset, month_y-outline_offset, text=f'{month_name}')
-    pdf.text(month_x+outline_offset, month_y+outline_offset, text=f'{month_name}')
+      outline_offset = 0.009
+      pdf.set_text_color(title_text_outline)
+      pdf.text(month_x-outline_offset, month_y-outline_offset, text=f'{month_name}')
+      pdf.text(month_x-outline_offset, month_y+outline_offset, text=f'{month_name}')
+      pdf.text(month_x+outline_offset, month_y-outline_offset, text=f'{month_name}')
+      pdf.text(month_x+outline_offset, month_y+outline_offset, text=f'{month_name}')
 
-    pdf.set_text_color(image_text_color)
-    pdf.text(month_x, month_y, text=f'{month_name}')
+      pdf.set_text_color(image_text_color)
+      pdf.text(month_x, month_y, text=f'{month_name}')
 
 
     # Begin Front of bottom-most section
