@@ -261,8 +261,6 @@ def main(args=sys.argv):
     print(f'CUCKOO_BEGIN = {cuckoo_begin_date}')
     cuckoos_performed = []
 
-    num_skipped_days_at_month_break = 0
-
     for month_i in range(1, 13):
       month_name = calendar.month_name[month_i] # 0 == '', 1 == January.
 
@@ -314,12 +312,15 @@ def main(args=sys.argv):
         for day_of_week in ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
           day_of_week_row.cell(f'{day_of_week}')
 
-        skip_a_day = False
+        skip_a_day_leave_a_blank = False
+        overlap_a_day = False
         if today >= cuckoo_begin_date:
-          if rand.choice([True] + (1*[False])):
-            num_skipped_days_at_month_break += 1
-            skip_a_day = True
-            cuckoos_performed.append(f'Skipping a day at {today}')
+          if rand.choice([True] + (2*[False])):
+            skip_a_day_leave_a_blank = True
+            cuckoos_performed.append(f'Skipping a day at {today} ({month_name})')
+          elif rand.choice([True] + (2*[False])):
+            overlap_a_day = True
+            cuckoos_performed.append(f'Overlapping a day at {today} ({month_name})')
 
         # We render here so we can remove empty weeks / fix up any chaos
         month_day_nums_grid = []
@@ -328,15 +329,20 @@ def main(args=sys.argv):
           week_of_day_nums = []
           for day_of_week_i in range(0, 7):
             if (today+today_render_delta).month == month_i and weekday_to_dow_idx((today).weekday()) == day_of_week_i:
-              if skip_a_day:
-                skip_a_day = False
+              if skip_a_day_leave_a_blank:
+                skip_a_day_leave_a_blank = False
                 today_render_delta -= datetime.timedelta(days=1)
                 week_of_day_nums.append('')
               else:
-                week_of_day_nums.append(f'{(today+today_render_delta).day}')
+                week_of_day_nums.append(f'{(today+today_render_delta).day}') # NORMAL state
               today = today + datetime.timedelta(days=1) # always advance time 1 day
             else:
-              week_of_day_nums.append('')
+              if overlap_a_day and (today+today_render_delta).month == month_i and (weekday_to_dow_idx((today).weekday()) + 13) % 7 == day_of_week_i: # If overlapping, and the normal first _would_be_ tomorrow...
+                overlap_a_day = False
+                week_of_day_nums.append(f'{(today+today_render_delta).day}') # write the 1st down,
+                today_render_delta += datetime.timedelta(days=1) # Increment delta (today stays true, but the numbers are all +1 now)
+              else:
+                week_of_day_nums.append('') # NORMAL state
 
           month_day_nums_grid.append(week_of_day_nums)
 
