@@ -77,6 +77,9 @@ def get_avg_color(path_to_img):
 def get_pallet(path_to_img, color_count=3):
   return colorthief.ColorThief(path_to_img).get_palette(color_count=color_count, quality=1)
 
+def invert_color(color):
+  r, g, b = color
+  return ( max(0, 255 - min(255, r)), max(0, 255 - min(255, g)), max(0, 255 - min(255, b)) )
 
 def main(args=sys.argv):
 
@@ -98,7 +101,7 @@ def main(args=sys.argv):
   random.seed(seed)
 
   month_imgs = readall_month_images()
-  print(f'month_imgs = {month_imgs}')
+  # print(f'month_imgs = {month_imgs}')
 
   pdf = fpdf.FPDF(orientation='landscape', format='A4', unit='in')
 
@@ -111,15 +114,29 @@ def main(args=sys.argv):
   # Title page - Front
   pdf.set_page_background(month_imgs[0])
   pdf.add_page()
+  title_page_color = get_avg_color(month_imgs[0])
+  title_page_pallet = get_avg_color(month_imgs[0])
+  title_text_color = invert_color(title_page_color)
 
   year_x = random.uniform(0.9, 8.0)
   year_y = random.uniform(0.9, 6.0)
-  pdf.set_font('helvetica', size=56)
-  #pdf.set_text_color('')
+
+  pdf.set_font('helvetica', size=72)
+
+  outline_offset = 0.011
+  pdf.set_text_color(title_page_color)
+  pdf.text(year_x-outline_offset, year_y-outline_offset, text=f'{year}')
+  pdf.text(year_x-outline_offset, year_y+outline_offset, text=f'{year}')
+  pdf.text(year_x+outline_offset, year_y-outline_offset, text=f'{year}')
+  pdf.text(year_x+outline_offset, year_y+outline_offset, text=f'{year}')
+
+  pdf.set_text_color(title_text_color)
   pdf.text(year_x, year_y, text=f'{year}')
 
   pdf.set_font('helvetica', size=14)
-  pdf.text(5, 2, text=f'{title_subtitle}, avg color = {get_avg_color(month_imgs[0])}\npallet = {get_pallet(month_imgs[0])}')
+  pdf.set_text_color(title_text_color)
+  pdf.text(5, 2, text=f'{title_subtitle}')
+
   # End Title Front
 
   for month_i in range(1, 12):
@@ -128,17 +145,49 @@ def main(args=sys.argv):
     # BACK of previous page, therefore the top-most page when calendar is hung.
     pdf.set_page_background(month_imgs[month_i])
     pdf.add_page()
-    pdf.set_font('helvetica', size=16)
-    pdf.cell(text=f'{month_name}')
+
+    image_page_color = get_avg_color(month_imgs[month_i])
+    image_page_pallet = get_avg_color(month_imgs[month_i])
+    image_text_color = invert_color(image_page_color)
+
+    month_x = random.uniform(0.9, 8.0)
+    month_y = random.uniform(0.9, 6.0)
+
+    pdf.set_font('helvetica', size=26)
+
+    outline_offset = 0.009
+    pdf.set_text_color(image_page_color)
+    pdf.text(month_x-outline_offset, month_y-outline_offset, text=f'{month_name}')
+    pdf.text(month_x-outline_offset, month_y+outline_offset, text=f'{month_name}')
+    pdf.text(month_x+outline_offset, month_y-outline_offset, text=f'{month_name}')
+    pdf.text(month_x+outline_offset, month_y+outline_offset, text=f'{month_name}')
+
+    pdf.set_text_color(image_text_color)
+    pdf.text(month_x, month_y, text=f'{month_name}')
 
 
     # Begin Front of bottom-most section
     pdf.set_page_background(None)
     pdf.add_page()
     pdf.set_font('helvetica', size=14)
+    pdf.set_text_color((6, 6, 6))
     pdf.cell(text=f'S/M/Tu/W/Th/F/Sat, avg color = {get_avg_color(month_imgs[month_i])}\npallet = {get_pallet(month_imgs[month_i])}')
 
-
+  # Finally, put this config on final page
+  pdf.set_page_background(None)
+  pdf.add_page()
+  pdf.set_font('helvetica', size=14)
+  pdf.set_text_color((6, 6, 6))
+  pdf.cell(text=f'= = = = CONFIG = = = =')
+  pdf.ln()
+  pdf.cell(text=f'SEED = {seed}')
+  pdf.ln()
+  pdf.cell(text=f'YEAR = {year}')
+  pdf.ln()
+  pdf.cell(text=f'TITLE_SUBTITLE = {title_subtitle}')
+  pdf.ln()
+  pdf.cell(text=f'OUT_FILE = {out_file}')
+  pdf.ln()
 
   pdf.output(out_file)
 
