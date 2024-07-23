@@ -9,6 +9,7 @@ If no image under `months/<N>.png` exists, one will randomly be downloaded from 
 # Dependencies
 
  - https://py-pdf.github.io/fpdf2/
+ - https://github.com/fengsp/color-thief-py
 
 
 
