@@ -210,6 +210,7 @@ def main(args=sys.argv):
 
   # End Title Front
 
+  single_day_padding=(2, 16, 16, 2) # top, right, bottom, and left
   # We begin January 1, and keep track of that plus any deltas we want to apply.
   # Early on it is important that the days follow eachother, but we have additional dimensions to mess
   # with as the year goes on!
@@ -264,10 +265,10 @@ def main(args=sys.argv):
         row = table.row()
         for day_of_week_i in range(0, 7):
           if today.month == month_i and weekday_to_dow_idx(today.weekday()) == day_of_week_i:
-            row.cell(f'{today.day}')
+            row.cell(f'{today.day}', padding=single_day_padding)
             today = today + datetime.timedelta(days=1)
           else:
-            row.cell('')
+            row.cell('', padding=single_day_padding)
         if today.month != month_i:
           break
 
