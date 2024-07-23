@@ -123,7 +123,7 @@ def main(args=sys.argv):
 
   pdf.set_font('helvetica', size=72)
 
-  outline_offset = 0.011
+  outline_offset = 0.014
   pdf.set_text_color(title_page_color)
   pdf.text(year_x-outline_offset, year_y-outline_offset, text=f'{year}')
   pdf.text(year_x-outline_offset, year_y+outline_offset, text=f'{year}')
@@ -133,9 +133,30 @@ def main(args=sys.argv):
   pdf.set_text_color(title_text_color)
   pdf.text(year_x, year_y, text=f'{year}')
 
-  pdf.set_font('helvetica', size=14)
+  subtitle_x, subtitle_alignment = random.choice([
+    (0.75, 'L'),
+    (9.25, 'R'),
+  ])
+  subtitle_y = random.uniform(0.9, 6.0)
+
+  pdf.set_font('helvetica', size=24)
+
+  outline_offset = 0.012
+  cell_w = 0
+  cell_h = 0
+  pdf.set_text_color(title_page_color)
+  pdf.set_x(subtitle_x-outline_offset) ; pdf.set_y(subtitle_y-outline_offset)
+  pdf.cell(cell_w, cell_h, text=f'{title_subtitle}', align=subtitle_alignment)
+  pdf.set_x(subtitle_x-outline_offset) ; pdf.set_y(subtitle_y+outline_offset)
+  pdf.cell(cell_w, cell_h, text=f'{title_subtitle}', align=subtitle_alignment)
+  pdf.set_x(subtitle_x+outline_offset) ; pdf.set_y(subtitle_y-outline_offset)
+  pdf.cell(cell_w, cell_h, text=f'{title_subtitle}', align=subtitle_alignment)
+  pdf.set_x(subtitle_x+outline_offset) ; pdf.set_y(subtitle_y+outline_offset)
+  pdf.cell(cell_w, cell_h, text=f'{title_subtitle}', align=subtitle_alignment)
+
   pdf.set_text_color(title_text_color)
-  pdf.text(5, 2, text=f'{title_subtitle}')
+  pdf.set_x(subtitle_x) ; pdf.set_y(subtitle_y)
+  pdf.cell(cell_w, cell_h, text=f'{title_subtitle}', align=subtitle_alignment)
 
   # End Title Front
 
