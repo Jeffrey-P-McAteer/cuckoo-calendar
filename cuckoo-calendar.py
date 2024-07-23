@@ -59,7 +59,7 @@ cache_me = joblib.Memory(cache_dir, verbose=0)
 def readall_month_images():
   month_imgs = dict()
   os.makedirs('months', exist_ok=True)
-  for month_i in range(0, 12):
+  for month_i in range(0, 13):
     # month_name = calendar.month_name[month_i] # 0 == '', 1 == January.
     month_img_f = os.path.abspath(os.path.join('months', f'{month_i}.png'))
     if not os.path.exists(month_img_f):
@@ -119,10 +119,10 @@ def main(args=sys.argv):
   #title_text_color = invert_color(title_page_color)
   title_text_color = invert_color(random.choice(get_pallet(month_imgs[0], color_count=4)))
 
-  year_x = random.uniform(0.9, 8.0)
-  year_y = random.uniform(0.9, 6.0)
+  year_x = random.uniform(0.9, 6.6)
+  year_y = random.uniform(1.3, 6.0)
 
-  pdf.set_font('helvetica', size=72)
+  pdf.set_font('helvetica', size=164)
 
   outline_offset = 0.014
   pdf.set_text_color(title_page_color)
@@ -142,10 +142,10 @@ def main(args=sys.argv):
     subtitle_y = random.uniform(0.9, 6.0)
     # If they are within 1.0 of the year_x/y, continue
     dist_to_year = abs(year_x-subtitle_x) + abs(year_y-subtitle_y)
-    if dist_to_year > 4.0:
+    if dist_to_year > 7.0:
       break
 
-  pdf.set_font('helvetica', size=24)
+  pdf.set_font('helvetica', size=32)
 
   outline_offset = 0.012
   cell_w = 0
@@ -166,7 +166,7 @@ def main(args=sys.argv):
 
   # End Title Front
 
-  for month_i in range(1, 12):
+  for month_i in range(1, 13):
     month_name = calendar.month_name[month_i] # 0 == '', 1 == January.
 
     # BACK of previous page, therefore the top-most page when calendar is hung.
@@ -180,7 +180,7 @@ def main(args=sys.argv):
     month_x = random.uniform(0.9, 8.0)
     month_y = random.uniform(0.9, 6.0)
 
-    pdf.set_font('helvetica', size=26)
+    pdf.set_font('helvetica', size=78)
 
     outline_offset = 0.009
     pdf.set_text_color(image_page_color)
