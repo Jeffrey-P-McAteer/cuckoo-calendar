@@ -116,6 +116,9 @@ def color_similarity(color1, color2):
     )
   )
 
+# Converter to get Sunday == 0, Monday == 1, Tuesday == 2, .. until Saturday == 6
+def weekday_to_dow_idx(weekday):
+  return (weekday + 1) % 7
 
 def main(args=sys.argv):
 
@@ -207,6 +210,11 @@ def main(args=sys.argv):
 
   # End Title Front
 
+  # We begin January 1, and keep track of that plus any deltas we want to apply.
+  # Early on it is important that the days follow eachother, but we have additional dimensions to mess
+  # with as the year goes on!
+  today = datetime.datetime(year, 1, 1, 0, 0, 0)
+
   for month_i in range(1, 13):
     month_name = calendar.month_name[month_i] # 0 == '', 1 == January.
 
@@ -247,10 +255,22 @@ def main(args=sys.argv):
 
     # Create a 7x4 grid
     with pdf.table() as table:
-      for row_i in range(0, 4):
+      day_of_week_row = table.row()
+      
+      for day_of_week in ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']:
+        day_of_week_row.cell(f'{day_of_week}')
+
+      for row_i in range(0, 6):
         row = table.row()
         for day_of_week_i in range(0, 7):
-          row.cell('Some text')
+          if today.month == month_i and weekday_to_dow_idx(today.weekday()) == day_of_week_i:
+            row.cell(f'{today.day}')
+            today = today + datetime.timedelta(days=1)
+          else:
+            row.cell('')
+        if today.month != month_i:
+          break
+
 
 
 
